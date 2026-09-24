@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1"
+      id="viewport-config"
+    />
+    <link rel="icon" href="" />
+    <title></title>
+    <link href="css/app.8621901d.css" rel="preload" as="style" />
+    <link href="js/app.300e71b3.js?v=5" rel="preload" as="script" />
+    <link href="js/chunk-vendors.e34f74f8.js?v=5" rel="preload" as="script" />
+    <link href="css/app.8621901d.css" rel="stylesheet" />
+    <script>
+      (function () {
+        function stripBlocked3P(url) {
+          var value = String(url);
+          if (value.indexOf("accounts.google.com/o/oauth2/iframe") === -1) return value;
+          if (value.indexOf("supportBlocked3PCookies") === -1) return value;
+          var next = value.replace(/([#&?])supportBlocked3PCookies=[^&#]*/g, "$1");
+          next = next.replace(/([#&?])&+/g, "$1").replace(/[?&]$/g, "");
+          console.log("[google-login] drop supportBlocked3PCookies");
+          return next;
+        }
+        try {
+          var desc = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, "src");
+          if (desc && desc.set && desc.get) {
+            Object.defineProperty(HTMLIFrameElement.prototype, "src", {
+              configurable: true,
+              enumerable: desc.enumerable,
+              get: desc.get,
+              set: function (value) {
+                desc.set.call(this, stripBlocked3P(value));
+              },
+            });
+          }
+        } catch (err) {
+          console.error("[google-login] patch iframe src failed", err);
+        }
+        var rawSetAttribute = Element.prototype.setAttribute;
+        Element.prototype.setAttribute = function (name, value) {
+          if (String(name).toLowerCase() === "src" && this.tagName === "IFRAME") {
+            value = stripBlocked3P(value);
+          }
+          return rawSetAttribute.call(this, name, value);
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript
+      ><strong
+        >We're sorry but doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong
+      ></noscript
+    >
+    <div id="app"></div>
+    <script src="js/chunk-vendors.e34f74f8.js?v=5"></script>
+    <script src="js/app.300e71b3.js?v=5"></script>
+  </body>
+</html>
